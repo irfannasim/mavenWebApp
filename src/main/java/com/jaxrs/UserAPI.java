@@ -1,98 +1,126 @@
 package com.jaxrs;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.persistence.PersistenceException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.enums.ResponseEnum;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.model.User;
+import com.response.ApiResponse;
 import com.service.UserService;
 import com.util.JsonUtil;
 import com.util.LogUtil;
-import com.wrapper.UserWrapper;
 
 @Path("/user")
 public class UserAPI {
+
 	UserService userService;
 
 	@GET
 	@Path("/users")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCountries(@HeaderParam("authorization") String auth) {
 		userService = new UserService();
-		Map<String, Object> returnDataMap = new LinkedHashMap<>();
-		returnDataMap.put(ResponseEnum.STATUS.getValue(),
-				ResponseEnum.ERROR.getValue());
-		returnDataMap.put(ResponseEnum.REASON.getValue(),
-				"Error no user found.");
-
+		ApiResponse response = new ApiResponse();
+		String result = "";
 		LogUtil.log("User Service :: finding all users", Level.INFO, null);
 
-		List<User> users = userService.getAllUsers();
+		try {
+			response.setResponseData("");
+			response.setResponseCode(ResponseEnum.USER_NOT_FOUND.getValue());
+			response.setErrorMessage("Users not found.");
 
-		if (users != null) {
-			returnDataMap.put(ResponseEnum.STATUS.getValue(),
-					ResponseEnum.SUCCESS.getValue());
-			returnDataMap.put(ResponseEnum.REASON.getValue(),
-					"No user found.");
-			returnDataMap.put(ResponseEnum.DATA.getValue(), users);
+			List<User> users = userService.getAllUsers();
+
+			if (users != null) {
+				String[] userFieldNames = { "firstName", "lastName", "email",
+						"type", "lastModified", "dob", "gender", "isDeleted" };
+				FilterProvider filters = new SimpleFilterProvider().addFilter(
+						"UserFilter", SimpleBeanPropertyFilter
+								.filterOutAllExcept(userFieldNames));
+
+				response.setResponseData(users);
+				response.setResponseCode(ResponseEnum.SUCCESS.getValue());
+				response.setErrorMessage("");
+				result = JsonUtil.pojoToJSONWithFilters(response, filters);
+			}
+
+		} catch (Exception ex) {
+			LogUtil.log("find users failed", Level.SEVERE, ex);
+			response.setResponseCode(ResponseEnum.EXCEPTION.getValue());
+			response.setErrorMessage("Internal Server Error.");
 		}
-		String response = JsonUtil.toJson(returnDataMap);
-
-		return Response.ok(response).build();
+		return Response.ok(result, MediaType.APPLICATION_JSON).build();
 	}
 
 	@POST
 	@Path("/createUser")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createUser(@HeaderParam("authorization") String auth,
 			String jsonString) {
 		userService = new UserService();
-		Map<String, String> returnDataMap = new LinkedHashMap<String, String>();
-		returnDataMap.put(ResponseEnum.STATUS.name(),
-				ResponseEnum.ERROR.getValue());
+		ApiResponse response = new ApiResponse();
+		String result = "";
 		LogUtil.log("User Service :: create user, payload is: " + jsonString,
 				Level.INFO, null);
 
 		try {
+			response.setResponseData(null);
+			response.setResponseCode(ResponseEnum.ERROR.getValue());
+			response.setErrorMessage("User creation failed.");
+
 			if (jsonString != null && !jsonString.isEmpty()) {
-				UserWrapper userWrapper = (UserWrapper) JsonUtil.fromJson(
-						jsonString, UserWrapper.class);
-				if (userWrapper != null) {
-					User user = APIsUtil.buildUserObject(userWrapper);
+				User user = (User) JsonUtil.jsonToPOJO(jsonString, User.class);
+
+				if (user != null) {
 
 					try {
 						boolean isCreated = userService.createUser(user);
 						if (isCreated) {
-							returnDataMap.put(ResponseEnum.STATUS.name(),
-									ResponseEnum.SUCCESS.getValue());
+							response.setResponseData(user);
+							response.setResponseCode(ResponseEnum.SUCCESS
+									.getValue());
+							response.setErrorMessage(null);
 						}
 					} catch (PersistenceException ex) {
-						returnDataMap.put(ResponseEnum.REASON.name(),
-								"Error while creating user...!");
+						response.setResponseCode(ResponseEnum.EXCEPTION
+								.getValue());
+						response.setErrorMessage("User creation failed.");
 					}
-
 				} else {
-					returnDataMap.put(ResponseEnum.REASON.name(),
-							"Insufficient Parametters...!");
+					response.setErrorMessage("Insufficient Parametters...!");
 				}
 			} else {
-				returnDataMap.put(ResponseEnum.REASON.name(),
-						"Insufficient Parametters...!");
+				response.setErrorMessage("Insufficient Parametters...!");
 			}
+
+			String[] userFieldNames = { "firstName", "lastName", "email",
+					"type", "lastModified", "dob", "gender", "isDeleted" };
+			FilterProvider filters = new SimpleFilterProvider()
+					.addFilter("UserFilter", SimpleBeanPropertyFilter
+							.filterOutAllExcept(userFieldNames));
+			result = JsonUtil.pojoToJSONWithFilters(response, filters);
+
 		} catch (Exception ex) {
+			response.setResponseCode(ResponseEnum.EXCEPTION.getValue());
+			response.setErrorMessage("Internal Server Error.");
 			LogUtil.log("User Service :: User creation failed ", Level.SEVERE,
 					null);
 		}
-		String response = JsonUtil.toJson(returnDataMap);
-
-		return Response.ok(response).build();
+		return Response.ok(result, MediaType.APPLICATION_JSON).build();
 	}
 
 }

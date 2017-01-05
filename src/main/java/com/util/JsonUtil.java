@@ -1,65 +1,90 @@
 package com.util;
 
-import java.lang.reflect.Type;
-import java.util.List;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+import java.util.logging.Level;
 
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class JsonUtil {
-	public static String toJson(Object object) {
-		String jsonString = "";
-		
+
+	public static TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
+
+	public static <T> Object jsonToPOJO(String json, Class<T> objectType)
+			throws IOException {
 		try {
-			jsonString = GsonSingleton.getInstance().toJson(object);
-		} catch (Exception e) {
-			e.printStackTrace();
+			Gson gson = new GsonBuilder().setDateFormat(
+					AppConstants.DATE_FORMAT1_STRING).create();
+			return gson.fromJson(json, objectType);
+		} catch (Exception ex) {
+			LogUtil.log("exception thrown in ConversionUtil.jsonToPOJO()",
+					Level.SEVERE, ex);
+			return null;
 		}
-		
-		return jsonString;
 	}
 
-	public static String toJsonExcludedNull(Object object) {
-		String jsonString = "";
-
+	public static String pojoToJSONwithoutFilters(Object pojo)
+			throws JsonGenerationException, JsonMappingException, IOException {
 		try {
-			jsonString = GsonSingleton.getBuilderInstance().excludeFieldsWithoutExposeAnnotation().create().toJson(object);
-		} catch (Exception e) {
-			e.printStackTrace();
+			DateFormat dateFormat = new SimpleDateFormat(
+					AppConstants.DATE_FORMAT1_STRING);
+			dateFormat.setTimeZone(GMT_TIME_ZONE);
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+			mapper.setDateFormat(dateFormat);
+			String json = mapper.writeValueAsString(pojo);
+			return json;
+		} catch (Exception ex) {
+			LogUtil.log(
+					"exception thrown in ConversionUtil.pojoToJSONwithoutFilters()",
+					Level.SEVERE, ex);
+			return "";
 		}
-
-		return jsonString;
 	}
 
-	public static <T> Object fromJson(String jsonString, Class<T> clazz) {
-		T object = null;
+	public static String pojoToJSONwithoutFilters(Object pojo,
+			DateFormat dateFormat) throws JsonGenerationException,
+			JsonMappingException, IOException {
 		try {
-			object = GsonSingleton.getInstance().fromJson(jsonString, clazz);
-		} catch (Exception e) {	
-			e.printStackTrace();
+			dateFormat.setTimeZone(GMT_TIME_ZONE);
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+			mapper.setDateFormat(dateFormat);
+			String json = mapper.writeValueAsString(pojo);
+			return json;
+		} catch (Exception ex) {
+			LogUtil.log(
+					"exception thrown in ConversionUtil.pojoToJSONwithoutFilters()",
+					Level.SEVERE, ex);
+			return "";
 		}
-		
-		return object;
-	}
-	
-	public static <T> List<T> fromJsonList(String jsonString, Type listType){
-		
-		List<T> lst = null;
-		try {
-			lst = GsonSingleton.getInstance().fromJson(jsonString, listType);
-		} catch (Exception e) {	
-			e.printStackTrace();
-		}
-		
-		return lst;				 
 	}
 
-	public static boolean isValidJSON(String json) {
+	public static String pojoToJSONWithFilters(Object pojo,
+			FilterProvider filters) {
 		try {
-			new JsonParser().parse(json);
-			return true;
-		} catch (JsonSyntaxException jse) {
-			return false;
+			DateFormat dateFormat = new SimpleDateFormat(
+					AppConstants.DATE_FORMAT1_STRING);
+			dateFormat.setTimeZone(GMT_TIME_ZONE);
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+			mapper.setDateFormat(dateFormat);
+			String json = mapper.writer(filters).writeValueAsString(pojo);
+			return json;
+		} catch (Exception ex) {
+			LogUtil.log(
+					"exception thrown in ConversionUtil.pojoToJSONwithFilters()",
+					Level.SEVERE, ex);
+			return "";
 		}
 	}
 }

@@ -12,8 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
+
 @Entity
 @Table(name = "user")
+@JsonFilter("UserFilter")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -32,6 +37,7 @@ public class User implements Serializable {
 	@Column(name = "email")
 	private String email;
 
+	@JsonIgnore
 	@Column(name = "password")
 	private String password;
 
@@ -136,7 +142,7 @@ public class User implements Serializable {
 	public List<UserRole> getRoles() {
 		return roles;
 	}
-
+ 
 	public void setRoles(List<UserRole> roles) {
 		this.roles = roles;
 	}

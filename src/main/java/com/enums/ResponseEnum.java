@@ -4,8 +4,11 @@ public enum ResponseEnum {
 	DATA("data"), 
 	STATUS("status"), 
 	REASON("reason"),
-	ERROR("Error"),
-	SUCCESS("Sucess");
+	ERROR("error"),
+	SUCCESS("success"),
+	USER_NOT_FOUND("USR_NOT_FOUND"),
+	EXCEPTION("SYS_ERR_01");
+	
 
 	String value;
 
