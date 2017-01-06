@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.model.User;
 import com.response.ApiResponse;
+import com.service.UserRoleService;
 import com.service.UserService;
 import com.util.JsonUtil;
 import com.util.LogUtil;
@@ -27,15 +28,16 @@ import com.util.LogUtil;
 public class UserAPI {
 
 	UserService userService;
+	UserRoleService userRoleService;
 
 	@GET
 	@Path("/users")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCountries(@HeaderParam("authorization") String auth) {
+	public Response getUsers(@HeaderParam("authorization") String auth) {
 		userService = new UserService();
 		ApiResponse response = new ApiResponse();
 		String result = "";
-		LogUtil.log("User Service :: finding all users", Level.INFO, null);
+		LogUtil.log("User API :: finding all users", Level.INFO, null);
 
 		try {
 			response.setResponseData("");
@@ -72,6 +74,7 @@ public class UserAPI {
 	public Response createUser(@HeaderParam("authorization") String auth,
 			String jsonString) {
 		userService = new UserService();
+		userRoleService = new UserRoleService();
 		ApiResponse response = new ApiResponse();
 		String result = "";
 		LogUtil.log("User Service :: create user, payload is: " + jsonString,
@@ -88,6 +91,12 @@ public class UserAPI {
 				if (user != null) {
 
 					try {
+						if (user.getRoles().size() > 0) {
+//							UserRole userRole = userRoleService.findByListOfIds(user.getroles))
+//							user.getRoles().clear();
+//							user.getRoles().add(e)
+						}
+						
 						boolean isCreated = userService.createUser(user);
 						if (isCreated) {
 							response.setResponseData(user);

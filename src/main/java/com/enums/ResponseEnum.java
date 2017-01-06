@@ -7,6 +7,7 @@ public enum ResponseEnum {
 	ERROR("error"),
 	SUCCESS("success"),
 	USER_NOT_FOUND("USR_NOT_FOUND"),
+	USER_ROLE_NOT_FOUND("USR_ROLE_NOT_FOUND"),
 	EXCEPTION("SYS_ERR_01");
 	
 

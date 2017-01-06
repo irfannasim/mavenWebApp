@@ -56,7 +56,7 @@ public class User implements Serializable {
 	@Column(name = "isdeleted")
 	private boolean isDeleted;
 
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany
 	private List<UserRole> roles;
 
 	public int getId() {

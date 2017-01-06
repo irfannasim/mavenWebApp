@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -65,6 +66,52 @@ public abstract class GenericDAO {
 			throw re;
 		}
 		return isSaved;
+	}
+
+	public <E> List<E> findByListOfIds(final Class<E> entityClass,
+			final String identifierColName, final Collection<Integer> idsList) {
+		LogUtil.log("find by list of Ids  " + entityClass.getName()
+				+ " instances", Level.INFO, null);
+		try {
+			if (session.getTransaction() != null
+					&& session.getTransaction().isActive()) {
+				session.getTransaction();
+			} else {
+				session.beginTransaction();
+			}
+
+			final String queryString = "SELECT FROM " + entityClass.getName()
+					+ " o WHERE o." + identifierColName + " IN (:idsList)";
+			Query q = session.createQuery(queryString).setParameter("idsList",
+					idsList);
+
+			return q.list();
+
+		} catch (RuntimeException re) {
+			LogUtil.log("delete failed", Level.SEVERE, re);
+			throw re;
+		}
+	}
+
+	public <E> E findById(Class<E> entity, Integer id) {
+		LogUtil.log("finding " + entity.getName() + " instance with id: " + id,
+				Level.INFO, null);
+		try {
+			if (session.getTransaction() != null
+					&& session.getTransaction().isActive()) {
+				session.getTransaction();
+			} else {
+				session.beginTransaction();
+			}
+
+			Query q = session.createQuery("select model from "
+					+ entity.getName() + " model WHERE model.id = :id");
+			return (E) q.setParameter("id", id).uniqueResult();
+
+		} catch (RuntimeException re) {
+			LogUtil.log("find failed", Level.SEVERE, re);
+			throw re;
+		}
 	}
 
 }

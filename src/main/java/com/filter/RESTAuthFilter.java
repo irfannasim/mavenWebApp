@@ -1,15 +1,25 @@
 package com.filter;
 
 import com.jaxrs.BasicAuth;
+import com.model.User;
+import com.service.UserService;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
+
 import java.net.URI;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 @Provider
 public class RESTAuthFilter implements ContainerRequestFilter {
+	UserService userService;
+
+	public RESTAuthFilter() {
+		userService = new UserService();
+	}
+
 	@Override
 	public ContainerRequest filter(ContainerRequest containerRequest)
 			throws WebApplicationException {
@@ -46,16 +56,13 @@ public class RESTAuthFilter implements ContainerRequestFilter {
 
 			// Get credentials from database
 			try {
-				/*
-				 * SubjectDAO subject = (SubjectDAO)
-				 * InitialContext.doLookup(JNDI_SUB); HCP hcp =
-				 * subject.findHcpByEmail(credentials[0]); Authenticate subject
-				 * Boolean authentificationResult = new
-				 * PasswordUtil().passwordCorrect(credentials[1],
-				 * hcp.getPassword());
-				 */
+
+				User user = userService.findByEmail(credentials[0]);
+
 				Boolean authentificationResult = false;
-				if (credentials[0].equalsIgnoreCase("irfan") && credentials[1].equalsIgnoreCase("password")) {
+				if (user != null
+						&& credentials[0].equalsIgnoreCase(user.getEmail())
+						&& credentials[1].equals(user.getPassword())) {
 					authentificationResult = true;
 				}
 

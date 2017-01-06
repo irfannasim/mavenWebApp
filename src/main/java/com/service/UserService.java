@@ -14,6 +14,15 @@ public class UserService {
 		userDAO = new UserDAOImpl();
 	}
 
+	public User findById(int userId) {
+		return userDAO.findById(userId);
+	}
+
+	public User findByEmail(String email) {
+		return userDAO.findByEmail(email);
+
+	}
+
 	public List<User> getAllUsers() {
 		return userDAO.getAllUsers();
 	}
