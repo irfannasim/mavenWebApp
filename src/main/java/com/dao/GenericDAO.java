@@ -18,6 +18,7 @@ public abstract class GenericDAO {
 		session = SessionUtil.getSessionFactory().getCurrentSession();
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E> List<E> findAll(final Class<E> entityClass) {
 		LogUtil.log("finding all " + entityClass.getName() + " instances",
 				Level.INFO, null);
@@ -96,6 +97,7 @@ public abstract class GenericDAO {
 		return isSaved;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E> List<E> findByListOfIds(final Class<E> entityClass,
 			final String identifierColName, final Collection<Integer> idsList) {
 		LogUtil.log("find by list of Ids  " + entityClass.getName()
@@ -121,6 +123,7 @@ public abstract class GenericDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E> E findById(Class<E> entity, Integer id) {
 		LogUtil.log("finding " + entity.getName() + " instance with id: " + id,
 				Level.INFO, null);
@@ -142,7 +145,6 @@ public abstract class GenericDAO {
 		}
 	}
 
-	@SuppressWarnings("null")
 	public <E> boolean delete(Class<E> entity, Object user) {
 		boolean isDeleted = false;
 		LogUtil.log("deleting " + entity.getClass().getName() + " instance",
