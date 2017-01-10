@@ -6,12 +6,15 @@ E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\jaxrs\BasicAuth.j
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\dao\GenericDAO.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\jaxrs\UserAPI.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\dao\UserRoleDAOImpl.java
+E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\response\ApiResponse.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\enums\ResponseEnum.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\util\JsonUtil.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\util\GsonSingleton.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\filter\RESTAuthFilter.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\service\UserRoleService.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\util\SessionUtil.java
+E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\jaxrs\RoleAPI.java
+E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\util\AppConstants.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\model\UserRole.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\service\UserService.java
 E:\Temp\Workspaces\GITWorkspaces\mavenWebApp\src\main\java\com\wrapper\UserWrapper.java

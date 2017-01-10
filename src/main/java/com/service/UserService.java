@@ -28,8 +28,15 @@ public class UserService {
 	}
 
 	public boolean createUser(User user) {
-		userDAO = new UserDAOImpl();
 		return userDAO.createUser(user);
+	}
+
+	public boolean updateUser(User user) {
+		return userDAO.updateUser(user);
+	}
+
+	public boolean deleteUser(User user) {
+		return userDAO.deleteUser(user);
 	}
 
 }

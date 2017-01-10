@@ -21,8 +21,17 @@ public class UserDAOImpl extends GenericDAO implements UserDAO {
 	}
 
 	@Override
+	public boolean updateUser(User user) {
+		return update(user);
+	}
+
+	@Override
 	public User findById(int userId) {
 		return findById(User.class, userId);
+	}
+
+	public boolean deleteUser(User user) {
+		return delete(User.class, user);
 	}
 
 	@Override

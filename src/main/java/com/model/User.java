@@ -56,7 +56,7 @@ public class User implements Serializable {
 	@Column(name = "isdeleted")
 	private boolean isDeleted;
 
-	@ManyToMany
+	@ManyToMany(cascade = { CascadeType.REMOVE })
 	private List<UserRole> roles;
 
 	public int getId() {
@@ -142,7 +142,7 @@ public class User implements Serializable {
 	public List<UserRole> getRoles() {
 		return roles;
 	}
- 
+
 	public void setRoles(List<UserRole> roles) {
 		this.roles = roles;
 	}

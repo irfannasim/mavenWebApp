@@ -30,7 +30,7 @@ public abstract class GenericDAO {
 				session.beginTransaction();
 			}
 
-			Query q = session.createQuery("select model from "
+			Query q = session.createQuery("SELECT model FROM "
 					+ entityClass.getName() + " model");
 			return q.list();
 
@@ -68,6 +68,34 @@ public abstract class GenericDAO {
 		return isSaved;
 	}
 
+	public <E> boolean update(E entity) {
+		LogUtil.log("updating " + entity.getClass().getName() + " instance",
+				Level.INFO, null);
+		boolean isSaved = false;
+		Transaction tx = null;
+
+		try {
+			if (session.getTransaction() != null
+					&& session.getTransaction().isActive()) {
+				tx = session.getTransaction();
+			} else {
+				tx = session.beginTransaction();
+			}
+			session.clear();
+			session.merge(entity.getClass().getName(), entity);
+			session.flush();
+			tx.commit();
+
+			LogUtil.log("update successful", Level.INFO, null);
+			isSaved = true;
+		} catch (RuntimeException re) {
+			LogUtil.log("update failed", Level.SEVERE, re);
+			tx.rollback();
+			throw re;
+		}
+		return isSaved;
+	}
+
 	public <E> List<E> findByListOfIds(final Class<E> entityClass,
 			final String identifierColName, final Collection<Integer> idsList) {
 		LogUtil.log("find by list of Ids  " + entityClass.getName()
@@ -88,7 +116,7 @@ public abstract class GenericDAO {
 			return q.list();
 
 		} catch (RuntimeException re) {
-			LogUtil.log("delete failed", Level.SEVERE, re);
+			LogUtil.log("find by list of ids failed", Level.SEVERE, re);
 			throw re;
 		}
 	}
@@ -104,7 +132,7 @@ public abstract class GenericDAO {
 				session.beginTransaction();
 			}
 
-			Query q = session.createQuery("select model from "
+			Query q = session.createQuery("SELECT model FROM "
 					+ entity.getName() + " model WHERE model.id = :id");
 			return (E) q.setParameter("id", id).uniqueResult();
 
@@ -112,6 +140,34 @@ public abstract class GenericDAO {
 			LogUtil.log("find failed", Level.SEVERE, re);
 			throw re;
 		}
+	}
+
+	@SuppressWarnings("null")
+	public <E> boolean delete(Class<E> entity, Object user) {
+		boolean isDeleted = false;
+		LogUtil.log("deleting " + entity.getClass().getName() + " instance",
+				Level.INFO, null);
+		Transaction tx = null;
+
+		try {
+			if (session.getTransaction() != null
+					&& session.getTransaction().isActive()) {
+				tx = session.getTransaction();
+			} else {
+				tx = session.beginTransaction();
+			}
+
+			session.delete(user);
+			session.flush();
+			tx.commit();
+
+			LogUtil.log("delete successful", Level.INFO, null);
+			isDeleted = true;
+		} catch (RuntimeException re) {
+			LogUtil.log("delete failed", Level.SEVERE, re);
+			throw re;
+		}
+		return isDeleted;
 	}
 
 }
