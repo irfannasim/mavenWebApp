@@ -1,4 +1,5 @@
 com\dao\GenericDAO.class
+com\util\AppConstants.class
 com\model\UserRole.class
 com\util\Test.class
 com\jaxrs\APIsUtil.class
@@ -7,6 +8,7 @@ com\util\GsonSingleton.class
 com\util\LogUtil.class
 com\jaxrs\BasicAuth.class
 com\util\JsonUtil.class
+com\response\ApiResponse.class
 com\enums\ResponseEnum.class
 com\filter\RESTAuthFilter.class
 com\wrapper\UserRoleWrapper.class
@@ -15,6 +17,7 @@ com\util\SessionUtil.class
 com\dao\UserDAO.class
 com\service\UserRoleService.class
 com\dao\UserDAOImpl.class
+com\jaxrs\RoleAPI.class
 com\service\UserService.class
 com\wrapper\UserWrapper.class
 com\dao\UserRoleDAOImpl.class
